@@ -145,6 +145,14 @@ def save_to_mongodb(data, ip_address, proxy_ip, proxy_port):
         st.error(f"Error saving to MongoDB: {e}")
 
 # Streamlit app
+
+# Set page metadata title
+st.set_page_config(
+    page_title="Latest Twitter(X) Trending Topics Scraper",  # Title of the page (metadata title)
+    page_icon="📰",  # Icon that appears in the browser tab (optional)
+    layout="wide"  # Layout type (optional, "centered" or "wide")
+)
+
 st.image("logo.webp", width=200)  # Display image with specific width and height
 st.title("Latest Twitter(X) Trending Topics Scraper")
 
