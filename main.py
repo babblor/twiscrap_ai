@@ -16,6 +16,10 @@ APIFY_API_TOKEN = os.getenv("APIFY_API_TOKEN")
 MONGO_URI = os.getenv("MONGO_URI")
 PROXY = os.getenv("PROXY")
 PORT = os.getenv("PORT")
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import time
 
 def init_selenium():
     """Simulate a dummy task using Selenium."""
@@ -25,23 +29,33 @@ def init_selenium():
     driver = webdriver.Chrome(options=options)
     
     try:
-        driver.get("https://example.com")  # Dummy website
+        driver.get("https://twitter.com/login")  # Navigate to Twitter login page
         time.sleep(2)  # Simulate waiting for the page to load
         
-        # Simulate interaction with the page (just to show something happening)
-        search_box = driver.find_element(By.NAME, "q")  # Find the search box (example)
-        search_box.send_keys("dummy search query")  # Type something into the search box
-        search_box.send_keys(Keys.RETURN)  # Press Enter
+        # Simulate interaction with the page (entering username and password)
+        username_box = driver.find_element(By.NAME, "text")  # Find the username input
+        username_box.send_keys("dummy_username")  # Simulate typing the username
+        username_box.send_keys(Keys.RETURN)  # Press Enter
         
-        time.sleep(3)  # Simulate waiting for search results
-        # Do something with the results (dummy task)
-        print("Selenium task simulated successfully.")
+        time.sleep(2)  # Wait for the password field to appear
+        
+        password_box = driver.find_element(By.NAME, "password")  # Find the password input
+        password_box.send_keys("dummy_password")  # Simulate typing the password
+        password_box.send_keys(Keys.RETURN)  # Press Enter
+        
+        time.sleep(3)  # Simulate waiting for the page to load after login attempt
+        
+        # Do something dummy with the results (not actually logging in)
+        print("Simulated Twitter login task completed successfully.")
         
     except Exception as e:
         print(f"Error during Selenium task: {e}")
     
     finally:
         driver.quit()  # Close the WebDriver
+
+# Run the function
+# init_selenium()
 
 
 def fetch_data_with_retry(url, proxy_ip, proxy_port, retries=3, delay=5):
