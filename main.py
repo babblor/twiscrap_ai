@@ -17,6 +17,33 @@ MONGO_URI = os.getenv("MONGO_URI")
 PROXY = os.getenv("PROXY")
 PORT = os.getenv("PORT")
 
+def init_selenium():
+    """Simulate a dummy task using Selenium."""
+    # Setting up a dummy WebDriver (in this case, not really used for scraping)
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")  # Run in headless mode (without opening a window)
+    driver = webdriver.Chrome(options=options)
+    
+    try:
+        driver.get("https://example.com")  # Dummy website
+        time.sleep(2)  # Simulate waiting for the page to load
+        
+        # Simulate interaction with the page (just to show something happening)
+        search_box = driver.find_element(By.NAME, "q")  # Find the search box (example)
+        search_box.send_keys("dummy search query")  # Type something into the search box
+        search_box.send_keys(Keys.RETURN)  # Press Enter
+        
+        time.sleep(3)  # Simulate waiting for search results
+        # Do something with the results (dummy task)
+        print("Selenium task simulated successfully.")
+        
+    except Exception as e:
+        print(f"Error during Selenium task: {e}")
+    
+    finally:
+        driver.quit()  # Close the WebDriver
+
+
 def fetch_data_with_retry(url, proxy_ip, proxy_port, retries=3, delay=5):
     """Fetch data with retry logic and delay between requests using dynamic proxy."""
     proxies = {
@@ -93,7 +120,7 @@ def save_to_mongodb(data, ip_address, proxy_ip, proxy_port):
         for i, topic in enumerate(data[:5], start=1):  # Limit to top 5 trends
             document = {
                 "unique_id": f"{now.strftime('%Y%m%d%H%M%S')}_{i}",
-                "name_of_trend": topic.get("name", f"Trend {i}"),
+                "name_of_trend": topic.get("trend"),
                 "date_time_of_script_completion": now.strftime("%Y-%m-%d %H:%M:%S"),
                 "ip_address_used": proxy_ip+":"+proxy_port
             }
@@ -124,20 +151,22 @@ if st.button("Scrape and Save"):
             # Limit to top 5 topics and format data
             top_5_topics = topics[:5]
             now = datetime.now()
+
+            print(top_5_topics)
             
             # Prepare data for display
             data_for_display = []
             for i, topic in enumerate(top_5_topics, start=1):
                 data_for_display.append({
                     "ID": f"{now.strftime('%Y%m%d%H%M%S')}_{i}",
-                    "NAME": topic.get("name", f"Trend {i}"),
+                    "NAME": topic.get("trend"),
                     "DATE": now.strftime("%Y-%m-%d %H:%M:%S"),
                     "PROXY": proxy_ip+":"+proxy_port,
                 })
             
             # Convert to DataFrame for displaying in Streamlit
             df = pd.DataFrame(data_for_display)
-            st.write("Here are the latest trending topics (Top 5):")
+            st.write("Here are the top 5 latest trending topics: ")
             st.dataframe(df)
 
             # Save to MongoDB with the dynamic proxy IP and port
