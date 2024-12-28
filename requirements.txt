@@ -1,1 +1,4 @@
 apify-client
+pandas
+pymongo
+python-dotenv
